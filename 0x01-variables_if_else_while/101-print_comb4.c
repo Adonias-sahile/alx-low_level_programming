@@ -11,9 +11,9 @@ int c, i, k;
 for (c = 0; c < 8; c++)
 {
         for (i = c + 1 ; i < 9; i++)
-        {
+	{
 		for (k = i + 1 ; k < 10; k++)
-       		 {
+		{
                 putchar((c % 10) + '0');
                 putchar((i % 10) + '0');
 		putchar((k % 10) + '0');
@@ -21,8 +21,8 @@ for (c = 0; c < 8; c++)
                         continue;
                 putchar(',');
                 putchar(' ');
-		}
-        }
+		 }
+	}
 }
 putchar('\n');
 

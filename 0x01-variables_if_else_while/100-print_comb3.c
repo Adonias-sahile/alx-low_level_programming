@@ -17,7 +17,7 @@ for (c = 0; c < 9; c++)
 		if (c == 8 && i == 9)
 			continue;
 		putchar(',');
-                putchar(' ');
+		putchar(' ');
 	}
 }
 putchar('\n');

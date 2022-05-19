@@ -19,4 +19,4 @@ size_t list_len(const list_t *h)
 		nbr_element++;
 	}
 	return (nbr_element);
-}:
+}

@@ -1,52 +1,105 @@
 #include "holberton.h"
-#include <stdio.h>
-
-#define MAXSIZE 1204
-#define SE STDERR_FILENO
 
 /**
- * main - create the copy bash script
- * @ac: argument count
- * @av: arguments as strings
- * Return: 0
+ * error_usage - Prints usage error message and exits.
+ *
+ * Return: Nothing.
+ *
  */
-int main(int ac, char *av[])
+
+void error_usage(void)
 {
-	int input_fd, output_fd, istatus, ostatus;
-	char buf[MAXSIZE];
-	mode_t mode;
+	dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+	exit(97);
+}
 
-	mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
-	if (ac != 3)
-		dprintf(SE, "Usage: cp file_from file_to\n"), exit(97);
-	input_fd = open(av[1], O_RDONLY);
-	if (input_fd == -1)
-		dprintf(SE, "Error: Can't read from file %s\n", av[1]), exit(98);
-	output_fd = open(av[2], O_CREAT | O_WRONLY | O_TRUNC, mode);
-	if (output_fd == -1)
-		dprintf(SE, "Error: Can't write to %s\n", av[2]), exit(99);
+/**
+ * error_read - Prints read error message and exits.
+ * @file: The name of the file.
+ *
+ * Return: Nothing.
+ *
+ */
 
-	do {
-		istatus = read(input_fd, buf, MAXSIZE);
-		if (istatus == -1)
-		{
-			dprintf(SE, "Error: Can't read from file %s\n", av[1]);
-			exit(98);
-		}
-		if (istatus > 0)
-		{
-			ostatus = write(output_fd, buf, (ssize_t) istatus);
-			if (ostatus == -1)
-				dprintf(SE, "Error: Can't write to %s\n", av[2]), exit(99);
-		}
-	} while (istatus > 0);
+void error_read(char *file)
+{
+	dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file);
+	exit(98);
+}
 
-	istatus = close(input_fd);
-	if (istatus == -1)
-		dprintf(SE, "Error: Can't close fd %d\n", input_fd), exit(100);
-	ostatus = close(output_fd);
-	if (ostatus == -1)
-		dprintf(SE, "Error: Can't close fd %d\n", output_fd), exit(100);
+/**
+ * error_write - Prints write error message and exits.
+ * @file: The name of the file.
+ *
+ * Return: Nothing.
+ *
+ */
+
+void error_write(char *file)
+{
+	dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file);
+	exit(99);
+}
+
+/**
+ * error_close - Prints close error message and exits.
+ * @fd: The file descriptor number.
+ *
+ * Return: Nothing.
+ *
+ */
+
+void error_close(int fd)
+{
+	dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+	exit(100);
+}
+
+/**
+ * main - Where the program starts.
+ * @argc: The number of arguments.
+ * @argv: The arguments as strings.
+ *
+ * Return: always 0
+ *
+ */
+
+int main(int argc, char **argv)
+{
+	char *file_from, *file_to;
+	char buff[1024] = {0};
+	int fd_from, fd_to;
+	int read_c, wrote_c;
+
+	if (argc != 3)
+		error_usage();
+
+	file_from = argv[1];
+	file_to = argv[2];
+
+	fd_from = open(file_from, O_RDONLY);
+	if (fd_from < 0)
+		error_read(file_from);
+
+	fd_to = open(file_to, O_TRUNC | O_WRONLY);
+	if (fd_to < 0)
+		fd_to = open(file_to, O_CREAT | O_WRONLY, 0664);
+	if (fd_to < 0)
+		error_write(file_to);
+
+	while ((read_c = read(fd_from, buff, 1024)))
+	{
+		if (read_c == -1)
+			error_read(file_from);
+		wrote_c = write(fd_to, buff, read_c);
+		if (wrote_c != read_c)
+			error_write(file_to);
+	}
+
+	if (close(fd_from) == -1)
+		error_close(fd_from);
+	if (close(fd_to) == -1)
+		error_close(fd_to);
 
 	return (0);
 }

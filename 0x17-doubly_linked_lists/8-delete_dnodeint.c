@@ -1,40 +1,45 @@
-#include "lists.h"
+#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 /**
- * delete_dnodeint_at_index - deletes a node at a specific index
- * @head: double pointer to the linked list
- * @index: index at which to delete node
+ * main - generate a key depending on a username for crackme5
+ * @argc: number of arguments passed
+ * @argv: arguments passed to main
  *
- * Return: 1 on success, -1 on failure
+ * Return: 0 on success, 1 on error
  */
-int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
+int main(int argc, char *argv[])
 {
-	dlistint_t *current;
-	unsigned int i;
+	unsigned int i, b;
+	size_t len, add;
+	char *l = "A-CHRDw87lNS0E9B2TibgpnMVys5XzvtOGJcYLU+4mjW6fxqZeF3Qa1rPhdKIouk";
+	char p[7] = "      ";
 
-	if (head == NULL || *head == NULL)
-		return (-1);
-	current = *head;
-	if (index == 0)
+	if (argc != 2)
 	{
-		*head = current->next;
-		if (current->next != NULL)
-		{
-			current->next->prev = NULL;
-		}
-		free(current);
+		printf("Correct usage: ./keygen5 username\n");
 		return (1);
 	}
-	for (i = 0; i < index; i++)
-	{
-		if (current->next == NULL)
-			return (-1);
-		current = current->next;
-	}
-	current->prev->next = current->next;
-	if (current->next != NULL)
-		current->next->prev = current->prev;
-	free(current);
-	return (1);
+	len = strlen(argv[1]);
+	p[0] = l[(len ^ 59) & 63];
+	for (i = 0, add = 0; i < len; i++)
+		add += argv[1][i];
+	p[1] = l[(add ^ 79) & 63];
+	for (i = 0, b = 1; i < len; i++)
+		b *= argv[1][i];
+	p[2] = l[(b ^ 85) & 63];
+	for (b = argv[1][0], i = 0; i < len; i++)
+		if ((char)b <= argv[1][i])
+			b = argv[1][i];
+	srand(b ^ 14);
+	p[3] = l[rand() & 63];
+	for (b = 0, i = 0; i < len; i++)
+		b += argv[1][i] * argv[1][i];
+	p[4] = l[(b ^ 239) & 63];
+	for (b = 0, i = 0; (char)i < argv[1][0]; i++)
+		b = rand();
+	p[5] = l[(b ^ 229) & 63];
+	printf("%s\n", p);
+	return (0);
 }

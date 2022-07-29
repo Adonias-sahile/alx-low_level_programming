@@ -26,5 +26,3 @@ while (node != NULL)
 }
 return (NULL);
 }
-Footer
-© 2022 Gi
